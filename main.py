@@ -117,10 +117,10 @@ class MainWindow(QWidget):
             front_range = range(1, 34)
             back_range = range(1, 17)
 
-        self._add_checkboxes(front_range, self.front_checkbox_layout, self.favorite_front_checkboxes)
-        self._add_checkboxes(back_range, self.back_checkbox_layout, self.favorite_back_checkboxes)
+        self._add_checkboxes(front_range, self.front_checkbox_layout, self.favorite_front_checkboxes, max_selection=5)
+        self._add_checkboxes(back_range, self.back_checkbox_layout, self.favorite_back_checkboxes, max_selection=2)
 
-    def _add_checkboxes(self, number_range, layout, checkbox_list):
+    def _add_checkboxes(self, number_range, layout, checkbox_list, max_selection):
         row_layout = QHBoxLayout()
         for i, num in enumerate(number_range):
             checkbox = QCheckBox(str(num))
@@ -131,6 +131,11 @@ class MainWindow(QWidget):
 
             # 使用样式表实现右对齐
             checkbox.setStyleSheet("text-align: right;")
+
+            # 添加事件处理，限制选择数量
+            checkbox.stateChanged.connect(
+                lambda state, cb=checkbox, cb_list=checkbox_list, max=max_selection: self.limit_checkbox_selection(state, cb, cb_list, max)
+            )
 
             row_layout.addWidget(checkbox)
 
@@ -143,6 +148,16 @@ class MainWindow(QWidget):
                 container_layout.addStretch()
                 layout.addLayout(container_layout)
                 row_layout = QHBoxLayout()
+
+    def limit_checkbox_selection(self, state, current_checkbox, checkbox_list, max_selection):
+        selected_count = sum(cb.isChecked() for cb in checkbox_list)
+        if selected_count >= max_selection:
+            for cb in checkbox_list:
+                if not cb.isChecked():
+                    cb.setEnabled(False)
+        else:
+            for cb in checkbox_list:
+                cb.setEnabled(True)
 
     def get_selected_lottery_type(self):
         if self.radio_dale_tou.isChecked():
