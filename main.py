@@ -50,7 +50,7 @@ class MainWindow(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("彩票号码生成器")
+        self.setWindowTitle("彩票号码生成器https://github.com/stephon1988/CaiPiao")
         self.setGeometry(100, 100, 800, 600)
 
         label = QLabel("请选择彩票类型并输入生成的组数：")
